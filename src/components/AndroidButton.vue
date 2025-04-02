@@ -26,7 +26,7 @@ withDefaults(
       color: color,
       bottom: `${margin}px`,
       right: '18px',
-      width: isThin && 'calc(100% - 151px)',
+      width: isThin ? 'calc(100% - 151px)' : 'calc(100vw - 2 * 18px)',
     }"
     :disabled="isDisabled">
     {{ text }}
