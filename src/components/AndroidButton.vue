@@ -1,22 +1,24 @@
 <script setup lang="ts">
 withDefaults(
-    defineProps<{
-      text?: string,
-      background?: string,
-      color?: string,
-      isDisabled?: boolean
-    }>(),
-    {
-      text: 'Далее',
-      background: '#2990FF',
-      color: '#FFFFFF',
-      isDisabled: false
-    }
+  defineProps<{
+    text?: string
+    background?: string
+    color?: string
+    isDisabled?: boolean
+  }>(),
+  {
+    text: 'Далее',
+    background: '#2990FF',
+    color: '#FFFFFF',
+    isDisabled: false,
+  }
 )
 </script>
 
 <template>
-  <button :style="{ background: background, color: color }" :disabled="isDisabled">
+  <button
+    :style="{ background: background, color: color }"
+    :disabled="isDisabled">
     {{ text }}
   </button>
 </template>

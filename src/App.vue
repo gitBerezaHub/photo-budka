@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import UploadPhoto from './pages/UploadPhoto.vue'
+import PhotoRecommendations from './pages/PhotoRecommendations.vue'
 </script>
 
 <template>
-  <UploadPhoto />
+  <PhotoRecommendations />
 </template>
 
 <style></style>
