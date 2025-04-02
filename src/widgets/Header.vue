@@ -16,12 +16,13 @@
 <style scoped>
 .header {
   color: #fff;
+  margin-top: 10px;
   padding: 4px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100vw;
-  height: 40px;
+  height: 36px;
 }
 
 .back {
