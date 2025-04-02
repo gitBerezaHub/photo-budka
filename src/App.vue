@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Alert } from 'vue-tg'
+import UploadPhoto from './pages/UploadPhoto.vue'
 </script>
 
 <template>
-  <Alert message="Hello!" />
+  <UploadPhoto />
 </template>
 
-<style scoped></style>
+<style></style>
