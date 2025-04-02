@@ -2,7 +2,7 @@
 
 <template>
   <section class="header">
-    <div class="back">
+    <div class="back" @click="$emit('prevPage')">
       <img class="back-arrow" src="../assets/back-arrow.svg" alt="" />
       <span class="back-text">Back</span>
     </div>

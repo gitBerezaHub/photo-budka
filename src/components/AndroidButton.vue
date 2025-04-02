@@ -1,10 +1,10 @@
 <script setup lang="ts">
 withDefaults(
     defineProps<{
-      text: string,
-      background: string,
-      color: string,
-      isDisabled: boolean
+      text?: string,
+      background?: string,
+      color?: string,
+      isDisabled?: boolean
     }>(),
     {
       text: 'Далее',
