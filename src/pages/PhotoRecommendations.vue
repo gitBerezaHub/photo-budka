@@ -14,7 +14,7 @@ const prevPage = () => pageNumber.value > 1 && pageNumber.value--
   <section class="wrapper">
     <img
       class="photo"
-      :src="`src/assets/recommendations${pageNumber}.png`"
+      :src="`images/recommendations${pageNumber}.png`"
       alt="Example Photo" />
     <div class="text-wrapper">
       <span class="text" v-if="pageNumber === 1"
