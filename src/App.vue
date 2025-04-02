@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import PhotoRecommendations from './pages/PhotoRecommendations.vue'
 </script>
 
 <template>
-  <PhotoRecommendations />
+  <RouterView />
 </template>
 
 <style></style>
