@@ -29,7 +29,7 @@ button {
   border-radius: 8px;
   font-size: 17px;
   position: fixed;
-  bottom: 10px;
+  bottom: 24px;
   width: inherit;
 }
 
