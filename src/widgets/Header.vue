@@ -23,6 +23,7 @@
   justify-content: space-between;
   width: 100vw;
   height: 36px;
+  z-index: 2;
 }
 
 .back {

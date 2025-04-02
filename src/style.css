@@ -16,6 +16,7 @@ body {
 
 #app {
   max-width: 1280px;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;

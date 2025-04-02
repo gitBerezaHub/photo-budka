@@ -1,21 +1,83 @@
+<template>
+  <Header @prev-page="prevPage" />
+  <div class="wrapper">
+    <div class="title-wrapper">
+      <h2 class="title">Загрузите от 15 до 40 фото.</h2>
+      <h3 class="sub-title" v-if="!photos.length">
+        Чем больше, тем лучше сможет обучиться нейросеть.
+      </h3>
+    </div>
+    <div v-if="!photos.length">
+      <div class="emoji-wrapper">
+        <img class="emoji" src="../assets/emoji.png" alt="" />
+      </div>
+      <div class="text-wrapper">
+        <span class="text"
+          >Не торопитесь. Можно сделать отдельный альбом, в медиатеке смартфона
+          или облачном хранилище, куда вы аккуратно соберете ваши фотографии, а
+          затем вернетесь сюда и добавите. Это единственная ваша задача перед
+          тем как все станет очень просто и увлекательно!</span
+        >
+      </div>
+      <AndroidButton v-bind="submitButton" @click="submit" />
+      <AndroidButton v-bind="addPhotoButton" @click="openGallery" />
+    </div>
+
+    <PhotoGrid
+      :photos="photos"
+      @photo-click="openPhotoModal"
+      @photo-delete="deletePhoto" />
+
+    <div class="gallery-footer" v-if="photos.length">
+      <div class="photo-count">{{ correctPhotosLength }} фото</div>
+      <div class="gallery-actions">
+        <AndroidButton v-bind="addMoreButton" @click="openGallery" />
+        <AndroidButton v-bind="finishButton" />
+      </div>
+    </div>
+
+    <PhotoModal
+      v-if="selectedPhoto"
+      :photo="selectedPhoto"
+      @close="closePhotoModal"
+      @delete="deleteSelectedPhoto" />
+
+    <input
+      type="file"
+      ref="fileInput"
+      @change="handleFileSelect"
+      accept="image/*"
+      multiple
+      style="display: none" />
+  </div>
+</template>
+
 <script setup lang="ts">
-import Header from "../widgets/Header.vue";
-import AndroidButton from "../components/AndroidButton.vue";
-import {reactive} from "vue";
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import PhotoModal from '../components/PhotoModal.vue'
+import PhotoGrid from '../components/PhotoGrid.vue'
+import type { Photo } from '../api/types.ts'
+import { cleanupPhotoURLs, createPhotosFromFiles } from '../shared/photos.ts'
+import AndroidButton from '../components/AndroidButton.vue'
+import Header from '../widgets/Header.vue'
+import router from '../router'
+
+const prevPage = () => router.back()
 
 interface IButton {
   text?: string
   background?: string
   color?: string
-  isDisabled?: boolean,
+  isDisabled?: boolean
   margin?: number
+  isThin?: boolean
 }
 
 const submitButton: IButton = reactive({
   text: 'Все понятно!',
   background: '#32E55E',
   color: '#000000',
-  margin: 90
+  margin: 90,
 })
 
 const addPhotoButton: IButton = reactive({
@@ -23,6 +85,20 @@ const addPhotoButton: IButton = reactive({
   background: '#222222',
   color: '#FFFFFF66',
   isDisabled: true,
+})
+
+const addMoreButton: IButton = reactive({
+  text: 'Добавить еще',
+  background: '#2a2a2a',
+  color: '#fff',
+  margin: 90,
+  isThin: true,
+})
+
+const finishButton: IButton = reactive({
+  text: 'Завершить',
+  background: '#3b82f6',
+  color: '#fff',
 })
 
 const submit = () => {
@@ -35,31 +111,78 @@ const submit = () => {
   addPhotoButton.isDisabled = false
 }
 
-</script>
+const fileInput = ref<HTMLInputElement | null>(null)
 
-<template>
-  <Header/>
-  <section class="wrapper">
-    <div class="title-wrapper">
-      <h2 class="title">Загрузите от 15 до 40 фото.</h2>
-      <h3 class="sub-title">Чем больше, тем лучше сможет обучиться нейросеть.</h3>
-    </div>
-    <div class="emoji-wrapper">
-      <img class="emoji" src="../assets/emoji.png" alt="">
-    </div>
-    <div class="text-wrapper">
-      <span class="text">Не торопитесь. Можно сделать отдельный альбом, в медиатеке смартфона или облачном хранилище, куда вы аккуратно соберете ваши фотографии, а затем вернетесь сюда и добавите.
-Это единственная ваша задача перед тем как все станет очень просто и увлекательно!</span>
-    </div>
-    <AndroidButton v-bind="submitButton" @click="submit"/>
-    <AndroidButton v-bind="addPhotoButton" />
-  </section>
-</template>
+const photos = ref<Photo[]>([])
+
+const correctPhotosLength = ref(0)
+
+const selectedPhoto = ref<Photo | null>(null)
+
+const photoWithWarning = ref<Photo | null>(null)
+
+const openGallery = () => {
+  fileInput.value?.click()
+}
+
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const files = target.files
+
+  if (files && files.length > 0) {
+    const newPhotos = createPhotosFromFiles(
+      Array.from(files),
+      photos.value.length
+    )
+    photos.value = [...photos.value, ...newPhotos]
+    correctPhotosLength.value = photos.value.filter(
+      (p) => !p.hasMultiplePeople
+    ).length
+    target.value = ''
+  }
+}
+
+const openPhotoModal = (photo: Photo) => {
+  selectedPhoto.value = photo
+}
+
+const closePhotoModal = () => {
+  selectedPhoto.value = null
+}
+
+const deletePhoto = (photo: Photo) => {
+  photos.value = photos.value.filter((p) => p.id !== photo.id)
+  correctPhotosLength.value--
+
+  if (selectedPhoto.value && selectedPhoto.value.id === photo.id) {
+    selectedPhoto.value = null
+  }
+
+  if (photoWithWarning.value && photoWithWarning.value.id === photo.id) {
+    photoWithWarning.value = null
+  }
+}
+
+const deleteSelectedPhoto = (photo: Photo) => {
+  deletePhoto(photo)
+  selectedPhoto.value = null
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', () => cleanupPhotoURLs(photos.value))
+})
+
+onBeforeUnmount(() => {
+  cleanupPhotoURLs(photos.value)
+  window.removeEventListener('beforeunload', () =>
+    cleanupPhotoURLs(photos.value)
+  )
+})
+</script>
 
 <style scoped>
 .wrapper {
   width: calc(100vw - 2 * 18px);
-  height: calc(100vh - 64px);
   padding-top: 10px;
   display: flex;
   flex-direction: column;
@@ -105,5 +228,33 @@ const submit = () => {
   line-height: 20px;
   letter-spacing: -0.43px;
   vertical-align: middle;
+}
+
+.gallery-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.gallery-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 125px;
+  background: #0f0f0f;
+  padding: 18px;
+  border-top: 1px solid #333;
+}
+
+.photo-count {
+  color: #3b82f6;
+  margin-bottom: 12px;
+  width: 115px;
+  height: 50px;
+  padding: 15px 24px;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 22px;
 }
 </style>

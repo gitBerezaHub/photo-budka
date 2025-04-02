@@ -2,11 +2,12 @@
 import Header from '../widgets/Header.vue'
 import AndroidButton from '../components/AndroidButton.vue'
 import { ref } from 'vue'
-import router from "../router";
+import router from '../router'
 
 const pageNumber = ref(1)
 
-const nextPage = () => pageNumber.value >= 3 ? router.push('/upload') : pageNumber.value++
+const nextPage = () =>
+  pageNumber.value >= 3 ? router.push('/upload') : pageNumber.value++
 
 const prevPage = () => pageNumber.value > 1 && pageNumber.value--
 </script>
