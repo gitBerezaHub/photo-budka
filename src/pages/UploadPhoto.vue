@@ -4,10 +4,16 @@ import Header from '../widgets/Header.vue'
 
 <template>
   <section class="wrapper">
-    <Header />
+    <Header/>
     <div class="img-wrapper">
-    <img class="photo" src="../assets/upload-photo1.png" alt="Example Photo">
+      <img class="photo" src="../assets/upload-photo1.png" alt="Example Photo">
     </div>
+    <div class="text-wrapper">
+    <span class="text">
+    Нейросеть должна знать как вы выглядите в профиль или в полупрофиль. Она должна увидеть как вы выглядите в разных локациях, при разном освещении. Как ведут себя ваши волосы, какие прически вы предпочитаете. Как вы выглядете с разным макияжем и вовсе без него. Какие оттенки  и текстура у вашей кожи и как вы получаетесь на черно-белых фото.
+    </span>
+    </div>
+
   </section>
 </template>
 
@@ -22,8 +28,24 @@ import Header from '../widgets/Header.vue'
 }
 
 .img-wrapper {
-  width: calc(100% - 2*18px);
+  width: calc(100% - 2 * 18px);
   height: 474px;
   margin-top: 24px;
+}
+
+.text-wrapper {
+  margin-top: 40px;
+  width: calc(100% - 2 * 18px);
+  text-align: left;
+  height: 140px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.text {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: -0.43px;
 }
 </style>
