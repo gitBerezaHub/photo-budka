@@ -4,9 +4,13 @@ const chatId = import.meta.env.VITE_CHAT_ID
 const userToken = import.meta.env.VITE_USER_TOKEN
 const bearerToken = import.meta.env.VITE_BEARER_TOKEN
 
+interface CreateRequestResult {
+  taskId: string | undefined
+  photos: NicePhoto[] | undefined
+}
 export async function createRequest(
   photosFormData: FormData
-): Promise<string | undefined> {
+): Promise<CreateRequestResult | undefined> {
   try {
     photosFormData.append('chatId', chatId)
     photosFormData.append('userToken', userToken)
@@ -20,6 +24,7 @@ export async function createRequest(
       },
     }
     let taskId
+    let photos
     await fetch(
       'https://bot.fotobudka.online/api/v1/avatarApp/create',
       requestOptions as RequestInit
@@ -27,10 +32,11 @@ export async function createRequest(
       .then((response) => response.json())
       .then((result) => {
         taskId = result.data.taskId
+        photos = result.data.photos
       })
       .catch((error) => console.log('error', error))
 
-    return taskId
+    return { taskId, photos }
   } catch (error) {
     console.log('error', error)
   }
@@ -106,12 +112,14 @@ export async function generateAvatar() {
     }
     let response
     await fetch(
-        'https://bot.fotobudka.online/api/v1/avatarApp/generate', requestOptions as RequestInit)
-        .then((response) => response.json())
-        .then((result) => {
-          response = result.data
-        })
-        .catch((error) => console.log('error', error))
+      'https://bot.fotobudka.online/api/v1/avatarApp/generate',
+      requestOptions as RequestInit
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        response = result.data
+      })
+      .catch((error) => console.log('error', error))
 
     return response
   } catch (error) {

@@ -14,7 +14,7 @@ import PhotoItem from './PhotoItem.vue'
 import type { NicePhoto } from '../api/types.ts'
 
 defineProps<{
-  photos: NicePhoto[]
+  photos?: NicePhoto[]
 }>()
 
 defineEmits<{

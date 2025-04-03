@@ -23,11 +23,11 @@
       <AndroidButton v-bind="addPhotoButton" @click="openGallery" />
     </div>
 
-    <PhotoSkeleton v-if="isInitialLoading"/>
+    <PhotoSkeleton v-if="isInitialLoading" />
 
     <PhotoGrid
-        v-else
-      :photos="photosFromBack"
+      v-else
+      :photos="finalPhotos"
       @photo-click="openPhotoModal"
       @photo-delete="deletePhoto" />
 
@@ -65,8 +65,12 @@ import type { NicePhoto } from '../api/types.ts'
 import AndroidButton from '../components/AndroidButton.vue'
 import Header from '../widgets/Header.vue'
 import router from '../router'
-import {checkTaskStatus, createRequest, generateAvatar} from '../api/photosAPI.ts'
-import PhotoSkeleton from "../components/PhotoSkeleton.vue";
+import {
+  checkTaskStatus,
+  createRequest,
+  generateAvatar,
+} from '../api/photosAPI.ts'
+import PhotoSkeleton from '../components/PhotoSkeleton.vue'
 
 const prevPage = () => router.back()
 
@@ -117,12 +121,14 @@ const submit = () => {
   addPhotoButton.isDisabled = false
 }
 
-const isInitialLoading = ref(false);
+const isInitialLoading = ref(false)
 const isGalleyOpened = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
+// const rawPhotos = ref<NicePhoto[]>([])
 const photosFromBack = ref<NicePhoto[]>([])
+const finalPhotos = ref<NicePhoto[] | undefined>([])
 const selectedPhoto = ref<NicePhoto | null>(null)
 const photoWithWarning = ref<NicePhoto | null>(null)
 
@@ -138,24 +144,32 @@ const handleFileSelect = async (event: Event) => {
   if (!files || files.length === 0) return
 
   try {
-    isInitialLoading.value = true;
+    isInitialLoading.value = true
 
     const photosFormData = new FormData()
     Array.from(files).forEach((file) => {
       photosFormData.append('photo[]', file, file.name)
     })
 
-    const taskId = await createRequest(photosFormData)
-    if (!taskId) {
+    let taskID
+    let rawPhotos
+    const result = await createRequest(photosFormData)
+    if (result) {
+      const { taskId, photos } = result
+      taskID = taskId
+      rawPhotos = photos
+    }
+    if (!taskID) {
       console.error('Не удалось создать задачу для обработки фотографий')
       return
     }
+    finalPhotos.value = rawPhotos
+    isInitialLoading.value = false
 
-    const processedPhotos = await checkTaskStatus(taskId)
+    const processedPhotos = await checkTaskStatus(taskID)
 
     photosFromBack.value = [...photosFromBack.value, ...processedPhotos]
-
-    isInitialLoading.value = false;
+    finalPhotos.value = photosFromBack.value
 
     target.value = ''
   } catch (error) {

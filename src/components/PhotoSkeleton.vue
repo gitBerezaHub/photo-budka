@@ -8,10 +8,9 @@
 
     <div class="loading-overlay">
       <HalfCircleSpinner
-          :animation-duration="1000"
-          :size="60"
-          color="#9e9e9e"
-      />
+        :animation-duration="1000"
+        :size="60"
+        color="#9e9e9e" />
       <div class="loading-text">Loading</div>
     </div>
   </div>
@@ -48,7 +47,7 @@ import { HalfCircleSpinner } from 'epic-spinners'
 .photo-skeleton-icon {
   width: 100%;
   height: 100%;
-  background-image: url("../assets/skeleton-photo.svg");
+  background-image: url('../assets/skeleton-photo.svg');
 }
 
 .loading-overlay {
@@ -67,23 +66,9 @@ import { HalfCircleSpinner } from 'epic-spinners'
   z-index: 3;
 }
 
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s linear infinite;
-}
-
 .loading-text {
   font-size: 16px;
   color: white;
   font-weight: 500;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 </style>

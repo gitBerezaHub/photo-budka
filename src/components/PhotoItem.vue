@@ -1,12 +1,19 @@
 <template>
-  <div class="photo-item" @click="$emit('click', photo)">
+  <div
+    class="photo-item"
+    @click="photo.status !== 'processing' && $emit('click', photo)">
     <img :src="photo.url" alt="Фото" class="photo-thumbnail" />
 
-    <div class="delete-icon" @click.stop="$emit('delete', photo)">
+    <div
+      class="delete-icon"
+      @click.stop="$emit('delete', photo)"
+      v-if="photo.status !== 'processing'">
       <img alt="" src="../assets/delete.svg" />
     </div>
 
-    <div v-if="!hasValidationIssue" class="checkmark-icon">
+    <div
+      v-if="!hasValidationIssue && photo.status !== 'processing'"
+      class="checkmark-icon">
       <img alt="" src="../assets/checkmark.svg" />
     </div>
 
@@ -14,11 +21,20 @@
       <img alt="" class="warning-icon" src="../assets/warning.svg" />
       <div class="warning-text">{{ warningText }}</div>
     </div>
+
+    <div v-if="photo.status === 'processing'" class="validation-overlay">
+      <HalfCircleSpinner
+        :animation-duration="1000"
+        :size="24"
+        color="#2990FF" />
+      <div class="validation-text">Проверка</div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { NicePhoto } from '../api/types.ts'
+import { HalfCircleSpinner } from 'epic-spinners'
 
 const { photo } = defineProps<{
   photo: NicePhoto
@@ -112,5 +128,26 @@ defineEmits<{
 .warning-text {
   font-size: 14px;
   text-align: center;
+}
+
+.validation-overlay {
+  position: absolute;
+  top: 36px;
+  left: 15px;
+  width: 75%;
+  height: 60%;
+  background-color: #000000a6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 8px;
+}
+
+.validation-text {
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
 }
 </style>
