@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 withDefaults(
   defineProps<{
     text?: string
@@ -21,14 +21,14 @@ withDefaults(
 
 <template>
   <button
+    :disabled="isDisabled"
     :style="{
       background: background,
       color: color,
       bottom: `${margin}px`,
       right: '18px',
       width: isThin ? 'calc(100% - 151px)' : 'calc(100vw - 2 * 18px)',
-    }"
-    :disabled="isDisabled">
+    }">
     {{ text }}
   </button>
 </template>

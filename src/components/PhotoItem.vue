@@ -3,30 +3,51 @@
     <img :src="photo.url" alt="Фото" class="photo-thumbnail" />
 
     <div class="delete-icon" @click.stop="$emit('delete', photo)">
-      <img src="../assets/delete.svg" alt="" />
+      <img alt="" src="../assets/delete.svg" />
     </div>
 
-    <div class="checkmark-icon" v-if="!photo.hasMultiplePeople">
-      <img src="../assets/checkmark.svg" alt="" />
+    <div v-if="!hasValidationIssue" class="checkmark-icon">
+      <img alt="" src="../assets/checkmark.svg" />
     </div>
 
-    <div v-if="photo.hasMultiplePeople" class="multiple-people-warning">
-      <img class="warning-icon" src="../assets/warning.svg" alt="" />
-      <div class="warning-text">Несколько людей</div>
+    <div v-if="hasValidationIssue" class="multiple-people-warning">
+      <img alt="" class="warning-icon" src="../assets/warning.svg" />
+      <div class="warning-text">{{ warningText }}</div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import type { Photo } from '../api/types.ts'
+<script lang="ts" setup>
+import type { NicePhoto } from '../api/types.ts'
 
-defineProps<{
-  photo: Photo
+const { photo } = defineProps<{
+  photo: NicePhoto
 }>()
 
+interface ValidationMessage {
+  key: keyof NicePhoto['validationResult']
+  message: string
+}
+
+const validationMessages: ValidationMessage[] = [
+  { key: 'isEyesClosed', message: 'Глаза закрыты' },
+  { key: 'withGlasses', message: 'Есть очки' },
+  { key: 'isFaceSmall', message: 'Маленькое лицо' },
+  { key: 'isProfile', message: 'Профиль' },
+  { key: 'isHalfProfile', message: 'Полу-профиль' },
+  { key: 'faceNotFound', message: 'Лицо не найдено' },
+  { key: 'badFileFormat', message: 'Ошибка файла' },
+]
+
+const hasValidationIssue = Object.values(photo.validationResult).some(Boolean)
+const warningText = hasValidationIssue
+  ? validationMessages.find((msg) => photo.validationResult[msg.key])
+      ?.message || ''
+  : ''
+
 defineEmits<{
-  (e: 'click', photo: Photo): void
-  (e: 'delete', photo: Photo): void
+  (e: 'click', photo: NicePhoto): void
+  (e: 'delete', photo: NicePhoto): void
 }>()
 </script>
 

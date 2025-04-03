@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Header from '../widgets/Header.vue'
 import AndroidButton from '../components/AndroidButton.vue'
 import { ref } from 'vue'
@@ -16,18 +16,18 @@ const prevPage = () => pageNumber.value > 1 && pageNumber.value--
   <Header @prev-page="prevPage" />
   <section class="wrapper">
     <img
-      class="photo"
       :src="`images/recommendations${pageNumber}.png`"
-      alt="Example Photo" />
+      alt="Example Photo"
+      class="photo" />
     <div class="text-wrapper">
-      <span class="text" v-if="pageNumber === 1"
+      <span v-if="pageNumber === 1" class="text"
         >Нейросеть должна знать как вы выглядите в профиль или в полупрофиль.
         Она должна увидеть как вы выглядите в разных локациях, при разном
         освещении. Как ведут себя ваши волосы, какие прически вы предпочитаете.
         Как вы выглядете с разным макияжем и вовсе без него. Какие оттенки и
         текстура у вашей кожи и как вы получаетесь на черно-белых фото.</span
       >
-      <div class="text" v-else-if="pageNumber === 2">
+      <div v-else-if="pageNumber === 2" class="text">
         <p>
           <span>Рекомендуем НЕ</span> использовать фотографии, которые были
           скачаны из социальных сетей – они сильно сжаты.
@@ -38,7 +38,7 @@ const prevPage = () => pageNumber.value > 1 && pageNumber.value--
           некачественным.
         </p>
       </div>
-      <div class="text" v-else>
+      <div v-else class="text">
         <p>Нельзя использовать фото где:</p>
         <ul>
           <li>несколько людей в кадре</li>

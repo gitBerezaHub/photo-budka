@@ -1,9 +1,9 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup></script>
 
 <template>
   <section class="header">
     <div class="back" @click="$emit('prevPage')">
-      <img class="back-arrow" src="../assets/back-arrow.svg" alt="" />
+      <img alt="" class="back-arrow" src="../assets/back-arrow.svg" />
       <span class="back-text">Back</span>
     </div>
     <div class="title">

@@ -3,13 +3,13 @@
   <div class="wrapper">
     <div class="title-wrapper">
       <h2 class="title">Загрузите от 15 до 40 фото.</h2>
-      <h3 class="sub-title" v-if="!photos.length">
+      <h3 v-if="!photosFromBack.length" class="sub-title">
         Чем больше, тем лучше сможет обучиться нейросеть.
       </h3>
     </div>
-    <div v-if="!photos.length">
+    <div v-if="!photosFromBack.length">
       <div class="emoji-wrapper">
-        <img class="emoji" src="../assets/emoji.png" alt="" />
+        <img alt="" class="emoji" src="../assets/emoji.png" />
       </div>
       <div class="text-wrapper">
         <span class="text"
@@ -24,12 +24,14 @@
     </div>
 
     <PhotoGrid
-      :photos="photos"
+      :photos="photosFromBack"
       @photo-click="openPhotoModal"
       @photo-delete="deletePhoto" />
 
-    <div class="gallery-footer" v-if="photos.length">
-      <div class="photo-count">{{ correctPhotosLength }} фото</div>
+    <div v-if="photosFromBack.length" class="gallery-footer">
+      <div class="photo-count">
+        {{ photosFromBack.filter((p) => p.status !== 'error').length }} фото
+      </div>
       <div class="gallery-actions">
         <AndroidButton v-bind="addMoreButton" @click="openGallery" />
         <AndroidButton v-bind="finishButton" />
@@ -43,24 +45,24 @@
       @delete="deleteSelectedPhoto" />
 
     <input
-      type="file"
       ref="fileInput"
-      @change="handleFileSelect"
       accept="image/*"
       multiple
-      style="display: none" />
+      style="display: none"
+      type="file"
+      @change="handleFileSelect" />
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import PhotoModal from '../components/PhotoModal.vue'
 import PhotoGrid from '../components/PhotoGrid.vue'
-import type { Photo } from '../api/types.ts'
-import { cleanupPhotoURLs, createPhotosFromFiles } from '../shared/photos.ts'
+import type { NicePhoto } from '../api/types.ts'
 import AndroidButton from '../components/AndroidButton.vue'
 import Header from '../widgets/Header.vue'
 import router from '../router'
+import { checkTaskStatus, createRequest } from '../api/photosAPI.ts'
 
 const prevPage = () => router.back()
 
@@ -113,36 +115,43 @@ const submit = () => {
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const photos = ref<Photo[]>([])
-
-const correctPhotosLength = ref(0)
-
-const selectedPhoto = ref<Photo | null>(null)
-
-const photoWithWarning = ref<Photo | null>(null)
+const photosFromBack = ref<NicePhoto[]>([])
+const selectedPhoto = ref<NicePhoto | null>(null)
+const photoWithWarning = ref<NicePhoto | null>(null)
 
 const openGallery = () => {
   fileInput.value?.click()
 }
 
-const handleFileSelect = (event: Event) => {
+const handleFileSelect = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = target.files
 
-  if (files && files.length > 0) {
-    const newPhotos = createPhotosFromFiles(
-      Array.from(files),
-      photos.value.length
-    )
-    photos.value = [...photos.value, ...newPhotos]
-    correctPhotosLength.value = photos.value.filter(
-      (p) => !p.hasMultiplePeople
-    ).length
+  if (!files || files.length === 0) return
+
+  try {
+    const photosFormData = new FormData()
+    Array.from(files).forEach((file) => {
+      photosFormData.append('photo[]', file, file.name)
+    })
+
+    const taskId = await createRequest(photosFormData)
+    if (!taskId) {
+      console.error('Не удалось создать задачу для обработки фотографий')
+      return
+    }
+
+    const processedPhotos = await checkTaskStatus(taskId)
+
+    photosFromBack.value = [...photosFromBack.value, ...processedPhotos]
+
     target.value = ''
+  } catch (error) {
+    console.error('Ошибка при загрузке фотографий:', error)
   }
 }
 
-const openPhotoModal = (photo: Photo) => {
+const openPhotoModal = (photo: NicePhoto) => {
   selectedPhoto.value = photo
 }
 
@@ -150,33 +159,39 @@ const closePhotoModal = () => {
   selectedPhoto.value = null
 }
 
-const deletePhoto = (photo: Photo) => {
-  photos.value = photos.value.filter((p) => p.id !== photo.id)
-  correctPhotosLength.value--
+const deletePhoto = (photo: NicePhoto) => {
+  photosFromBack.value = photosFromBack.value.filter((p) => p.id !== photo.id)
 
-  if (selectedPhoto.value && selectedPhoto.value.id === photo.id) {
+  if (selectedPhoto.value?.id === photo.id) {
     selectedPhoto.value = null
   }
 
-  if (photoWithWarning.value && photoWithWarning.value.id === photo.id) {
+  if (photoWithWarning.value?.id === photo.id) {
     photoWithWarning.value = null
   }
 }
 
-const deleteSelectedPhoto = (photo: Photo) => {
+const deleteSelectedPhoto = (photo: NicePhoto) => {
   deletePhoto(photo)
   selectedPhoto.value = null
 }
 
+function cleanupPhotoURLs(photos: NicePhoto[]): void {
+  photos.forEach((photo) => {
+    URL.revokeObjectURL(photo.url)
+  })
+}
+
 onMounted(() => {
-  window.addEventListener('beforeunload', () => cleanupPhotoURLs(photos.value))
+  const cleanupHandler = () => cleanupPhotoURLs(photosFromBack.value)
+  window.addEventListener('beforeunload', cleanupHandler)
 })
 
 onBeforeUnmount(() => {
-  cleanupPhotoURLs(photos.value)
-  window.removeEventListener('beforeunload', () =>
-    cleanupPhotoURLs(photos.value)
-  )
+  cleanupPhotoURLs(photosFromBack.value)
+
+  const cleanupHandler = () => cleanupPhotoURLs(photosFromBack.value)
+  window.removeEventListener('beforeunload', cleanupHandler)
 })
 </script>
 

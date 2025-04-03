@@ -1,6 +1,15 @@
-export interface Photo {
+export interface NicePhoto {
   id: number
+  photoIndex: number
   url: string
-  file: File
-  hasMultiplePeople: boolean
+  status: 'finished' | 'error' | 'processing'
+  validationResult: {
+    withGlasses: boolean
+    isFaceSmall: boolean
+    isEyesClosed: boolean
+    isProfile: boolean
+    isHalfProfile: boolean
+    faceNotFound: boolean
+    badFileFormat: boolean
+  }
 }

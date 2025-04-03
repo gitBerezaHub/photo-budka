@@ -1,25 +1,25 @@
 <template>
   <div class="photos-grid">
     <PhotoItem
-      v-for="(photo, index) in photos"
-      :key="index"
+      v-for="photo in photos"
+      :key="photo.id"
       :photo="photo"
       @click="$emit('photo-click', photo)"
       @delete="$emit('photo-delete', photo)" />
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import PhotoItem from './PhotoItem.vue'
-import type { Photo } from '../api/types.ts'
+import type { NicePhoto } from '../api/types.ts'
 
 defineProps<{
-  photos: Photo[]
+  photos: NicePhoto[]
 }>()
 
 defineEmits<{
-  (e: 'photo-click', photo: Photo): void
-  (e: 'photo-delete', photo: Photo): void
+  (e: 'photo-click', photo: NicePhoto): void
+  (e: 'photo-delete', photo: NicePhoto): void
 }>()
 </script>
 

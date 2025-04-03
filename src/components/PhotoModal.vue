@@ -6,19 +6,19 @@
 
         <!-- Кнопка удаления для обычных фото (справа вверху) -->
         <button
-          v-if="!photo.hasMultiplePeople"
+          v-if="!hasValidationIssue"
           class="modal-close"
           @click="$emit('delete', photo)">
           <span>Удалить</span>
-          <img src="../assets/delete.svg" alt="" />
+          <img alt="" src="../assets/delete.svg" />
         </button>
 
         <!-- Предупреждение для фото с несколькими людьми -->
-        <div v-if="photo.hasMultiplePeople">
+        <div v-if="hasValidationIssue">
           <div class="warning-content">
-            <img class="warning-icon" src="../assets/warning.svg" alt="" />
+            <img alt="" class="warning-icon" src="../assets/warning.svg" />
             <div class="warning-text">
-              <div class="warning-title">Несколько людей на фото!</div>
+              <div class="warning-title">{{ warningText }}</div>
               <div class="warning-message">
                 Эта фотография не может быть отправлена
               </div>
@@ -28,7 +28,7 @@
 
         <!-- Кнопка удаления для фото с несколькими людьми (внизу) -->
         <button
-          v-if="photo.hasMultiplePeople"
+          v-if="hasValidationIssue"
           class="modal-delete-btn"
           @click="$emit('delete', photo)">
           Удалить
@@ -38,16 +38,37 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import type { Photo } from '../api/types.ts'
+<script lang="ts" setup>
+import type { NicePhoto } from '../api/types.ts'
 
-defineProps<{
-  photo: Photo
+const { photo } = defineProps<{
+  photo: NicePhoto
 }>()
+
+interface ValidationMessage {
+  key: keyof NicePhoto['validationResult']
+  message: string
+}
+
+const validationMessages: ValidationMessage[] = [
+  { key: 'isEyesClosed', message: 'Глаза на фотографии закрыты' },
+  { key: 'withGlasses', message: 'На фотографии присутствуют очки' },
+  { key: 'isFaceSmall', message: 'Лицо на фотографии слишком маленькое' },
+  { key: 'isProfile', message: 'Фотография сделана в профиль' },
+  { key: 'isHalfProfile', message: 'Фотография сделана в полу-профиль' },
+  { key: 'faceNotFound', message: 'Лицо на фотографии не найдено' },
+  { key: 'badFileFormat', message: 'Неверный формат файла' },
+]
+
+const hasValidationIssue = Object.values(photo.validationResult).some(Boolean)
+const warningText = hasValidationIssue
+  ? validationMessages.find((msg) => photo.validationResult[msg.key])
+      ?.message || ''
+  : ''
 
 defineEmits<{
   (e: 'close'): void
-  (e: 'delete', photo: Photo): void
+  (e: 'delete', photo: NicePhoto): void
 }>()
 </script>
 
