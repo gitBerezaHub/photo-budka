@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
 
 .emoji-wrapper {
   width: inherit;
-  height: 432px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

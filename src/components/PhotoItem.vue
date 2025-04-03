@@ -12,12 +12,12 @@
     </div>
 
     <div
-      v-if="!hasValidationIssue && photo.status !== 'processing'"
+      v-if="photo.status === 'finished'"
       class="checkmark-icon">
       <img alt="" src="../assets/checkmark.svg" />
     </div>
 
-    <div v-if="hasValidationIssue" class="multiple-people-warning">
+    <div v-if="photo.status === 'error'" class="multiple-people-warning">
       <img alt="" class="warning-icon" src="../assets/warning.svg" />
       <div class="warning-text">{{ warningText }}</div>
     </div>
@@ -55,11 +55,7 @@ const validationMessages: ValidationMessage[] = [
   { key: 'badFileFormat', message: 'Ошибка файла' },
 ]
 
-const hasValidationIssue = Object.values(photo.validationResult).some(Boolean)
-const warningText = hasValidationIssue
-  ? validationMessages.find((msg) => photo.validationResult[msg.key])
-      ?.message || ''
-  : ''
+const warningText = photo.status === 'error' ? validationMessages.find((msg) => photo.validationResult[msg.key])?.message : ''
 
 defineEmits<{
   (e: 'click', photo: NicePhoto): void
