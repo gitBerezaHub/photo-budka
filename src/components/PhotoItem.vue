@@ -35,6 +35,7 @@
 <script lang="ts" setup>
 import type { NicePhoto } from '../api/types.ts'
 import { HalfCircleSpinner } from 'epic-spinners'
+import {computed} from "vue";
 
 const { photo } = defineProps<{
   photo: NicePhoto
@@ -55,7 +56,12 @@ const validationMessages: ValidationMessage[] = [
   { key: 'badFileFormat', message: 'Ошибка файла' },
 ]
 
-const warningText = photo.status === 'error' ? validationMessages.find((msg) => photo.validationResult[msg.key])?.message : ''
+const warningText = computed(() => {
+  if (photo.status === 'error') {
+    return validationMessages.find((msg) => photo.validationResult[msg.key])?.message || '';
+  }
+  return '';
+});
 
 defineEmits<{
   (e: 'click', photo: NicePhoto): void
@@ -85,7 +91,6 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .delete-icon {
@@ -93,6 +98,7 @@ defineEmits<{
   right: 8px;
   width: 16px;
   height: 16px;
+  cursor: pointer;
 }
 
 .checkmark-icon {

@@ -33,7 +33,7 @@
 
     <div v-if="isGalleyOpened" class="gallery-footer">
       <div class="photo-count">
-        {{ photosFromBack.filter((p) => p.status !== 'error').length }} фото
+        {{ finalPhotos?.filter((p) => p.status !== 'error').length }} фото
       </div>
       <div class="gallery-actions">
         <AndroidButton v-bind="addMoreButton" @click="openGallery" />
@@ -126,8 +126,7 @@ const isGalleyOpened = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const photosFromBack = ref<NicePhoto[]>([])
-const finalPhotos = ref<NicePhoto[] | undefined>([])
+const finalPhotos = ref<NicePhoto[]>([])
 const selectedPhoto = ref<NicePhoto | null>(null)
 const photoWithWarning = ref<NicePhoto | null>(null)
 const photosFormData = new FormData()
@@ -162,13 +161,12 @@ const handleFileSelect = async (event: Event) => {
       console.error('Не удалось создать задачу для обработки фотографий')
       return
     }
-    finalPhotos.value = rawPhotos
+    finalPhotos.value = rawPhotos ? rawPhotos : []
     isInitialLoading.value = false
 
     const processedPhotos = await checkTaskStatus(taskID)
 
-    photosFromBack.value = [...processedPhotos]
-    finalPhotos.value = photosFromBack.value
+    finalPhotos.value = [...processedPhotos]
 
     target.value = ''
   } catch (error) {
@@ -185,7 +183,7 @@ const closePhotoModal = () => {
 }
 
 const deletePhoto = (photo: NicePhoto) => {
-  photosFromBack.value = photosFromBack.value.filter((p) => p.id !== photo.id)
+  finalPhotos.value = finalPhotos?.value.filter((p) => p.id !== photo.id)
 
   if (selectedPhoto.value?.id === photo.id) {
     selectedPhoto.value = null
@@ -208,14 +206,14 @@ function cleanupPhotoURLs(photos: NicePhoto[]): void {
 }
 
 onMounted(() => {
-  const cleanupHandler = () => cleanupPhotoURLs(photosFromBack.value)
+  const cleanupHandler = () => cleanupPhotoURLs(finalPhotos.value)
   window.addEventListener('beforeunload', cleanupHandler)
 })
 
 onBeforeUnmount(() => {
-  cleanupPhotoURLs(photosFromBack.value)
+  cleanupPhotoURLs(finalPhotos.value)
 
-  const cleanupHandler = () => cleanupPhotoURLs(photosFromBack.value)
+  const cleanupHandler = () => cleanupPhotoURLs(finalPhotos.value)
   window.removeEventListener('beforeunload', cleanupHandler)
 })
 </script>
