@@ -1,10 +1,5 @@
 <script lang="ts" setup>
 defineEmits(['prevPage'])
-// window.Telegram.WebApp.ready();
-// const width = window.Telegram.WebApp.viewportWidth;
-// const height = window.Telegram.WebApp.viewportHeight;
-// console.log(`Ширина: ${width}px, Высота: ${height}px`);
-
 </script>
 
 <template>
@@ -16,10 +11,8 @@ defineEmits(['prevPage'])
     <div class="title">
       <h1 class="upload">Загрузка фото</h1>
       <p class="name">Фотобудка</p>
-      <p class="name">{{Telegram.WebApp.viewportWidth}} x {{ Telegram.WebApp.viewportHeight }}</p>
     </div>
   </section>
-  <!-- Добавляем пустой элемент для компенсации высоты фиксированного хедера -->
   <div class="header-spacer"></div>
 </template>
 

@@ -59,23 +59,20 @@ const prevPage = () => pageNumber.value > 1 && pageNumber.value--
 <style scoped>
 .wrapper {
   width: calc(100vw - 2 * 18px);
-  height: calc(100vh - 64px);
-  padding-top: 10px;
+  padding: 30px 0 100px;
   display: flex;
   flex-direction: column;
 }
 
 .photo {
   margin-top: 24px;
-  width: 394px;
-  height: 474px;
+  width: 100%;
 }
 
 .text-wrapper {
-  margin-top: 40px;
+  margin-top: 10px;
   width: 100%;
   text-align: left;
-  height: 140px;
   display: flex;
   align-items: flex-end;
 }
