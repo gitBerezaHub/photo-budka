@@ -126,11 +126,11 @@ const isGalleyOpened = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-// const rawPhotos = ref<NicePhoto[]>([])
 const photosFromBack = ref<NicePhoto[]>([])
 const finalPhotos = ref<NicePhoto[] | undefined>([])
 const selectedPhoto = ref<NicePhoto | null>(null)
 const photoWithWarning = ref<NicePhoto | null>(null)
+const photosFormData = new FormData()
 
 const openGallery = () => {
   fileInput.value?.click()
@@ -146,7 +146,6 @@ const handleFileSelect = async (event: Event) => {
   try {
     isInitialLoading.value = true
 
-    const photosFormData = new FormData()
     Array.from(files).forEach((file) => {
       photosFormData.append('photo[]', file, file.name)
     })
@@ -168,7 +167,7 @@ const handleFileSelect = async (event: Event) => {
 
     const processedPhotos = await checkTaskStatus(taskID)
 
-    photosFromBack.value = [...photosFromBack.value, ...processedPhotos]
+    photosFromBack.value = [...processedPhotos]
     finalPhotos.value = photosFromBack.value
 
     target.value = ''
