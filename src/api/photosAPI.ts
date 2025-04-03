@@ -89,3 +89,32 @@ export async function checkTaskStatus(taskId: string): Promise<NicePhoto[]> {
     }, 3000)
   })
 }
+
+export async function generateAvatar() {
+  try {
+    let formData = new FormData()
+    formData.append('chatId', chatId)
+    formData.append('userToken', userToken)
+
+    let requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow',
+      headers: {
+        Authorization: bearerToken,
+      },
+    }
+    let response
+    await fetch(
+        'https://bot.fotobudka.online/api/v1/avatarApp/generate', requestOptions as RequestInit)
+        .then((response) => response.json())
+        .then((result) => {
+          response = result.data
+        })
+        .catch((error) => console.log('error', error))
+
+    return response
+  } catch (error) {
+    console.log('error', error)
+  }
+}

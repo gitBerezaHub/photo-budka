@@ -3,11 +3,11 @@
   <div class="wrapper">
     <div class="title-wrapper">
       <h2 class="title">Загрузите от 15 до 40 фото.</h2>
-      <h3 v-if="!photosFromBack.length" class="sub-title">
+      <h3 v-if="!isGalleyOpened" class="sub-title">
         Чем больше, тем лучше сможет обучиться нейросеть.
       </h3>
     </div>
-    <div v-if="!photosFromBack.length">
+    <div v-if="!isGalleyOpened">
       <div class="emoji-wrapper">
         <img alt="" class="emoji" src="../assets/emoji.png" />
       </div>
@@ -23,18 +23,21 @@
       <AndroidButton v-bind="addPhotoButton" @click="openGallery" />
     </div>
 
+    <PhotoSkeleton v-if="isInitialLoading"/>
+
     <PhotoGrid
+        v-else
       :photos="photosFromBack"
       @photo-click="openPhotoModal"
       @photo-delete="deletePhoto" />
 
-    <div v-if="photosFromBack.length" class="gallery-footer">
+    <div v-if="isGalleyOpened" class="gallery-footer">
       <div class="photo-count">
         {{ photosFromBack.filter((p) => p.status !== 'error').length }} фото
       </div>
       <div class="gallery-actions">
         <AndroidButton v-bind="addMoreButton" @click="openGallery" />
-        <AndroidButton v-bind="finishButton" />
+        <AndroidButton v-bind="finishButton" @click="generateAvatar" />
       </div>
     </div>
 
@@ -62,7 +65,8 @@ import type { NicePhoto } from '../api/types.ts'
 import AndroidButton from '../components/AndroidButton.vue'
 import Header from '../widgets/Header.vue'
 import router from '../router'
-import { checkTaskStatus, createRequest } from '../api/photosAPI.ts'
+import {checkTaskStatus, createRequest, generateAvatar} from '../api/photosAPI.ts'
+import PhotoSkeleton from "../components/PhotoSkeleton.vue";
 
 const prevPage = () => router.back()
 
@@ -113,6 +117,9 @@ const submit = () => {
   addPhotoButton.isDisabled = false
 }
 
+const isInitialLoading = ref(false);
+const isGalleyOpened = ref(false)
+
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const photosFromBack = ref<NicePhoto[]>([])
@@ -121,6 +128,7 @@ const photoWithWarning = ref<NicePhoto | null>(null)
 
 const openGallery = () => {
   fileInput.value?.click()
+  isGalleyOpened.value = true
 }
 
 const handleFileSelect = async (event: Event) => {
@@ -130,6 +138,8 @@ const handleFileSelect = async (event: Event) => {
   if (!files || files.length === 0) return
 
   try {
+    isInitialLoading.value = true;
+
     const photosFormData = new FormData()
     Array.from(files).forEach((file) => {
       photosFormData.append('photo[]', file, file.name)
@@ -144,6 +154,8 @@ const handleFileSelect = async (event: Event) => {
     const processedPhotos = await checkTaskStatus(taskId)
 
     photosFromBack.value = [...photosFromBack.value, ...processedPhotos]
+
+    isInitialLoading.value = false;
 
     target.value = ''
   } catch (error) {
