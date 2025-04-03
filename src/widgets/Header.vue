@@ -1,4 +1,6 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+defineEmits(['prevPage'])
+</script>
 
 <template>
   <section class="header">
@@ -11,19 +13,34 @@
       <p class="name">Фотобудка</p>
     </div>
   </section>
+  <!-- Добавляем пустой элемент для компенсации высоты фиксированного хедера -->
+  <div class="header-spacer"></div>
 </template>
 
 <style scoped>
 .header {
   color: #fff;
-  margin-top: 10px;
-  padding: 4px 0;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100vw;
+  width: 100%;
   height: 36px;
-  z-index: 2;
+  z-index: 1000; /* Увеличиваем z-index, чтобы хедер был поверх других элементов */
+
+  /* Добавляем фиксированное позиционирование */
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  /* Добавляем фон и тень для визуального отделения */
+  background-color: #121212; /* Цвет фона, соответствующий темной теме */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Элемент для компенсации высоты фиксированного хедера */
+.header-spacer {
+  height: 56px; /* Высота хедера + отступы */
 }
 
 .back {
@@ -60,6 +77,7 @@
   font-size: 17px;
   line-height: 22px;
   text-align: center;
+  margin: 0; /* Убираем стандартные отступы для h1 */
 }
 
 .name {
@@ -69,5 +87,6 @@
   letter-spacing: 0.1px;
   text-align: center;
   color: #aaaaaa;
+  margin: 0; /* Убираем стандартные отступы для p */
 }
 </style>
