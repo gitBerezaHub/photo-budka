@@ -39,14 +39,14 @@
 </template>
 
 <script lang="ts" setup>
-import type { NicePhoto } from '../api/types.ts'
+import type { IPhoto } from '../api/types.ts'
 
 const { photo } = defineProps<{
-  photo: NicePhoto
+  photo: IPhoto
 }>()
 
 interface ValidationMessage {
-  key: keyof NicePhoto['validationResult']
+  key: keyof IPhoto['validationResult']
   message: string
 }
 
@@ -68,7 +68,7 @@ const warningText = hasValidationIssue
 
 defineEmits<{
   (e: 'close'): void
-  (e: 'delete', photo: NicePhoto): void
+  (e: 'delete', photo: IPhoto): void
 }>()
 </script>
 

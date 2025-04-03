@@ -5,15 +5,13 @@
     <img :src="photo.url" alt="Фото" class="photo-thumbnail" />
 
     <div
+      v-if="photo.status !== 'processing'"
       class="delete-icon"
-      @click.stop="$emit('delete', photo)"
-      v-if="photo.status !== 'processing'">
+      @click.stop="$emit('delete', photo)">
       <img alt="" src="../assets/delete.svg" />
     </div>
 
-    <div
-      v-if="photo.status === 'finished'"
-      class="checkmark-icon">
+    <div v-if="photo.status === 'finished'" class="checkmark-icon">
       <img alt="" src="../assets/checkmark.svg" />
     </div>
 
@@ -33,16 +31,16 @@
 </template>
 
 <script lang="ts" setup>
-import type { NicePhoto } from '../api/types.ts'
+import type { IPhoto } from '../api/types.ts'
 import { HalfCircleSpinner } from 'epic-spinners'
-import {computed} from "vue";
+import { computed } from 'vue'
 
 const { photo } = defineProps<{
-  photo: NicePhoto
+  photo: IPhoto
 }>()
 
 interface ValidationMessage {
-  key: keyof NicePhoto['validationResult']
+  key: keyof IPhoto['validationResult']
   message: string
 }
 
@@ -58,14 +56,17 @@ const validationMessages: ValidationMessage[] = [
 
 const warningText = computed(() => {
   if (photo.status === 'error') {
-    return validationMessages.find((msg) => photo.validationResult[msg.key])?.message || '';
+    return (
+      validationMessages.find((msg) => photo.validationResult[msg.key])
+        ?.message || ''
+    )
   }
-  return '';
-});
+  return ''
+})
 
 defineEmits<{
-  (e: 'click', photo: NicePhoto): void
-  (e: 'delete', photo: NicePhoto): void
+  (e: 'click', photo: IPhoto): void
+  (e: 'delete', photo: IPhoto): void
 }>()
 </script>
 

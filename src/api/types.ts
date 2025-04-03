@@ -1,4 +1,4 @@
-export interface NicePhoto {
+export interface IPhoto {
   id: number
   photoIndex: number
   url: string

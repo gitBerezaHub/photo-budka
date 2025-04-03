@@ -61,7 +61,7 @@
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import PhotoModal from '../components/PhotoModal.vue'
 import PhotoGrid from '../components/PhotoGrid.vue'
-import type { NicePhoto } from '../api/types.ts'
+import type { IPhoto } from '../api/types.ts'
 import AndroidButton from '../components/AndroidButton.vue'
 import Header from '../widgets/Header.vue'
 import router from '../router'
@@ -126,9 +126,9 @@ const isGalleyOpened = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const finalPhotos = ref<NicePhoto[]>([])
-const selectedPhoto = ref<NicePhoto | null>(null)
-const photoWithWarning = ref<NicePhoto | null>(null)
+const finalPhotos = ref<IPhoto[]>([])
+const selectedPhoto = ref<IPhoto | null>(null)
+const photoWithWarning = ref<IPhoto | null>(null)
 const photosFormData = new FormData()
 
 const openGallery = () => {
@@ -174,7 +174,7 @@ const handleFileSelect = async (event: Event) => {
   }
 }
 
-const openPhotoModal = (photo: NicePhoto) => {
+const openPhotoModal = (photo: IPhoto) => {
   selectedPhoto.value = photo
 }
 
@@ -182,7 +182,7 @@ const closePhotoModal = () => {
   selectedPhoto.value = null
 }
 
-const deletePhoto = (photo: NicePhoto) => {
+const deletePhoto = (photo: IPhoto) => {
   finalPhotos.value = finalPhotos?.value.filter((p) => p.id !== photo.id)
 
   if (selectedPhoto.value?.id === photo.id) {
@@ -194,12 +194,12 @@ const deletePhoto = (photo: NicePhoto) => {
   }
 }
 
-const deleteSelectedPhoto = (photo: NicePhoto) => {
+const deleteSelectedPhoto = (photo: IPhoto) => {
   deletePhoto(photo)
   selectedPhoto.value = null
 }
 
-function cleanupPhotoURLs(photos: NicePhoto[]): void {
+function cleanupPhotoURLs(photos: IPhoto[]): void {
   photos.forEach((photo) => {
     URL.revokeObjectURL(photo.url)
   })

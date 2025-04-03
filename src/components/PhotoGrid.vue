@@ -11,15 +11,15 @@
 
 <script lang="ts" setup>
 import PhotoItem from './PhotoItem.vue'
-import type { NicePhoto } from '../api/types.ts'
+import type { IPhoto } from '../api/types.ts'
 
 defineProps<{
-  photos?: NicePhoto[]
+  photos?: IPhoto[]
 }>()
 
 defineEmits<{
-  (e: 'photo-click', photo: NicePhoto): void
-  (e: 'photo-delete', photo: NicePhoto): void
+  (e: 'photo-click', photo: IPhoto): void
+  (e: 'photo-delete', photo: IPhoto): void
 }>()
 </script>
 

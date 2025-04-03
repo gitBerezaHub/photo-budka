@@ -1,4 +1,4 @@
-import type { NicePhoto } from './types.ts'
+import type { IPhoto } from './types.ts'
 
 const chatId = import.meta.env.VITE_CHAT_ID
 const userToken = import.meta.env.VITE_USER_TOKEN
@@ -6,8 +6,9 @@ const bearerToken = import.meta.env.VITE_BEARER_TOKEN
 
 interface CreateRequestResult {
   taskId: string | undefined
-  photos: NicePhoto[] | undefined
+  photos: IPhoto[] | undefined
 }
+
 export async function createRequest(
   photosFormData: FormData
 ): Promise<CreateRequestResult | undefined> {
@@ -42,10 +43,9 @@ export async function createRequest(
   }
 }
 
-export async function checkTaskStatus(taskId: string): Promise<NicePhoto[]> {
-  // Функция для выполнения запроса - вынесена, чтобы избежать дублирования кода
+export async function checkTaskStatus(taskId: string): Promise<IPhoto[]> {
   const fetchTaskStatus = async (): Promise<{
-    photos: NicePhoto[]
+    photos: IPhoto[]
     hasProcessing: boolean
   }> => {
     try {
@@ -65,7 +65,7 @@ export async function checkTaskStatus(taskId: string): Promise<NicePhoto[]> {
 
       const photos = result.data.photos
       const hasProcessing = photos.some(
-        (photo: NicePhoto) => photo.status === 'processing'
+        (photo: IPhoto) => photo.status === 'processing'
       )
 
       return { photos, hasProcessing }
@@ -75,15 +75,12 @@ export async function checkTaskStatus(taskId: string): Promise<NicePhoto[]> {
     }
   }
 
-  // Выполняем первый запрос немедленно
   const initialResult = await fetchTaskStatus()
 
-  // Если нет фотографий в обработке, сразу возвращаем результат
   if (!initialResult.hasProcessing) {
     return initialResult.photos
   }
 
-  // Если есть фотографии в обработке, продолжаем проверять с интервалом
   return new Promise((resolve) => {
     const interval = setInterval(async () => {
       const result = await fetchTaskStatus()
