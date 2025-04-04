@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import {computed, onBeforeUnmount, onMounted, reactive, ref} from 'vue'
 import PhotoModal from '../components/PhotoModal.vue'
 import PhotoGrid from '../components/PhotoGrid.vue'
 import type { IPhoto } from '../api/types.ts'
@@ -105,10 +105,22 @@ const addMoreButton: IButton = reactive({
   isThin: true,
 })
 
-const finishButton: IButton = reactive({
-  text: 'Завершить',
-  background: '#3b82f6',
-  color: '#fff',
+const finishButton = computed(() => {
+  let photosAmount = finalPhotos.value?.filter((p) => p.status !== 'error').length
+  if (photosAmount < 15 || photosAmount > 40) {
+    return {
+      text: 'Завершить',
+      background: '#252525',
+      color: '##FFFFFF14',
+      isDisabled: true
+    }
+  } else {
+    return {
+      text: 'Завершить',
+      background: '#3b82f6',
+      color: '#fff',
+    }
+  }
 })
 
 const submit = () => {
