@@ -48,6 +48,7 @@ import { HalfCircleSpinner } from 'epic-spinners'
   width: 100%;
   height: 100%;
   background-image: url('../assets/skeleton-photo.svg');
+  background-position: center;
 }
 
 .loading-overlay {

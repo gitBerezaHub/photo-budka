@@ -32,13 +32,18 @@
       @photo-delete="deletePhoto" />
 
     <div v-if="isGalleyOpened" class="gallery-footer">
-      <div class="photo-count">
-        {{ finalPhotos?.filter((p) => p.status !== 'error').length }} фото
+      <div class="top-row">
+        <div class="photo-count">
+          <HalfCircleSpinner
+              v-if="isInitialLoading"
+              :animation-duration="1000"
+              :size="22"
+              color="#2990FF" />
+          <p v-else>{{ finalPhotos?.filter((p) => p.status !== 'error').length }} фото</p>
+        </div>
+        <AndroidButton v-bind="addMoreButton" @click="openGallery" class="add-more-button" style="margin-top: 0;"/>
       </div>
-      <div class="gallery-actions">
-        <AndroidButton v-bind="addMoreButton" @click="openGallery" />
-        <AndroidButton v-bind="finishButton" @click="generateAvatar" />
-      </div>
+      <AndroidButton v-bind="finishButton" @click="generateAvatar" class="finish-button" style="margin-top: 0;" />
     </div>
 
     <PhotoModal
@@ -71,6 +76,7 @@ import {
   generateAvatar,
 } from '../api/photosAPI.ts'
 import PhotoSkeleton from '../components/PhotoSkeleton.vue'
+import { HalfCircleSpinner } from 'epic-spinners'
 
 const prevPage = () => router.back()
 
@@ -290,21 +296,34 @@ onBeforeUnmount(() => {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  height: 125px;
   background: #0f0f0f;
   padding: 18px;
   border-top: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .photo-count {
   color: #3b82f6;
-  margin-bottom: 12px;
-  width: 115px;
-  height: 50px;
-  padding: 15px 24px;
   font-weight: 600;
   font-size: 17px;
   line-height: 22px;
+  width: 115px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finish-button {
+  width: 100%;
 }
 </style>

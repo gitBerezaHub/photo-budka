@@ -70,7 +70,7 @@ const prevPage = () => pageNumber.value > 1 && pageNumber.value--
 }
 
 .text-wrapper {
-  margin-top: 10px;
+  margin-top: 40px;
   width: 100%;
   text-align: left;
   display: flex;
