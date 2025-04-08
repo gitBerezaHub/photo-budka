@@ -1,11 +1,11 @@
 <template>
   <div
     class="photo-item"
-    @click="photo.status !== 'processing' && $emit('click', photo)">
+    @click="photo.status !== '1processing' && $emit('click', photo)">
     <img :src="photo.url" alt="Фото" class="photo-thumbnail" />
 
     <div
-      v-if="photo.status !== 'processing'"
+      v-if="photo.status !== '1processing'"
       class="delete-icon"
       @click.stop="$emit('delete', photo)">
       <img alt="" src="../assets/delete.svg" />
@@ -20,7 +20,7 @@
       <div class="warning-text">{{ warningText }}</div>
     </div>
 
-    <div v-if="photo.status === 'processing'" class="validation-overlay">
+    <div v-if="photo.status === '1processing'" class="validation-overlay">
       <HalfCircleSpinner
         :animation-duration="1000"
         :size="24"

@@ -65,7 +65,7 @@ export async function checkTaskStatus(taskId: string): Promise<IPhoto[]> {
 
       const photos = result.data.photos
       const hasProcessing = photos.some(
-        (photo: IPhoto) => photo.status === 'processing'
+        (photo: IPhoto) => photo.status === '1processing'
       )
 
       return { photos, hasProcessing }

@@ -2,7 +2,7 @@ export interface IPhoto {
   id: number
   photoIndex: number
   url: string
-  status: 'finished' | 'error' | 'processing'
+  status: 'finished' | 'error' | '1processing'
   validationResult: {
     withGlasses: boolean
     isFaceSmall: boolean
